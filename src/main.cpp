@@ -8,7 +8,7 @@ const int interval = 1000;          // interval at which send CAN Messages (mill
 const int rx_queue_size = 10;       // Receive Queue size
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("Basic Demo - ESP32-Arduino-CAN");
   CAN_cfg.speed = CAN_SPEED_125KBPS;
   CAN_cfg.tx_pin_id = GPIO_NUM_22;
@@ -16,6 +16,8 @@ void setup() {
   CAN_cfg.rx_queue = xQueueCreate(rx_queue_size, sizeof(CAN_frame_t));
   // Init CAN Module
   ESP32Can.CANInit();
+  sleep(1000);
+  Serial.println(" > Setup Complete");
 }
 
 void loop() {
@@ -45,21 +47,5 @@ void loop() {
       printf("\n");
     }
   }
-  // Send CAN Message
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
-    CAN_frame_t tx_frame;
-    tx_frame.FIR.B.FF = CAN_frame_std;
-    tx_frame.MsgID = 0x001;
-    tx_frame.FIR.B.DLC = 8;
-    tx_frame.data.u8[0] = 0x00;
-    tx_frame.data.u8[1] = 0x01;
-    tx_frame.data.u8[2] = 0x02;
-    tx_frame.data.u8[3] = 0x03;
-    tx_frame.data.u8[4] = 0x04;
-    tx_frame.data.u8[5] = 0x05;
-    tx_frame.data.u8[6] = 0x06;
-    tx_frame.data.u8[7] = 0x07;
-    ESP32Can.CANWriteFrame(&tx_frame);
-  }
+
 }
