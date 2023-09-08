@@ -3,6 +3,8 @@
 #include <driver/gpio.h>
 
 byte gaz=0x00;
+byte speed=0x00;
+byte rpm=0x00;
 
 void setup_can_driver() {
   can_general_config_t general_config {
@@ -70,15 +72,42 @@ void loop() {
 // 122 max
 // 0x12 > 18
 
-      if(gaz!=rx_frame.data[4]){
+      if(rpm!=rx_frame.data[3]){
         //printf("Gaz: 0x%02X", rx_frame.data[4]);
+
+        int currentRPM = 0;
+        //highByte(currentRPM) = rx_frame.data[2];
+        //lowByte(currentRPM) = rx_frame.data[3];
+
+        //currentRPM = (rx_frame.data[2] << 16) | (rx_frame.data[3] << 8);
+        currentRPM = (rx_frame.data[2] << 8) | rx_frame.data[3];
+
+        //printf("RPM: 0x%02X%02X", rx_frame.data[2],rx_frame.data[3]);
+        Serial.print("RPM: ");
+        Serial.print(currentRPM);
+        Serial.println(" ");
+        rpm=rx_frame.data[3];
+
+/**
         int readvalue = rx_frame.data[4];
         int outvalue = (readvalue*100)/122;
         Serial.print("Gaz: ");
         Serial.print(outvalue);
-        Serial.println("%");
+        Serial.print("%  ");
         gaz=rx_frame.data[4];
+
+        
+
+        Serial.print("Speed: ");
+        Serial.print(rx_frame.data[0]);
+        Serial.print(rx_frame.data[1]);
+        Serial.print("  \n");
+        speed=rx_frame.data[1];
+*/
+
       }
+
+      
 
 
 
